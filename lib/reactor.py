@@ -76,10 +76,10 @@ class Matcher(object):
                 if field[6:].startswith("$"):
                     stdin.append(self.lookup(field[7:], variables, data))
                 else:
-                    stdin.append(field[6:])
+                    stdin.append(field[6:].encode('ascii'))
             else:
-                args.append(field)
-        return (args, "\n".join(stdin))
+                args.append(field.encode('ascii'))
+        return (args, b"\n".join(stdin))
 
     def run(self, topic, uuid, datetime, username, data):
         try:
@@ -92,7 +92,6 @@ class Matcher(object):
         LOG.debug("Running: %s", args)
         try:
             out = subprocess.check_output(args, stderr=subprocess.STDOUT,
-                                          universal_newlines=True,
                                           input=stdin_s, timeout=self.timeout)
         except OSError as err:
             LOG.error("Unable to run %s (%s)", args, err)
